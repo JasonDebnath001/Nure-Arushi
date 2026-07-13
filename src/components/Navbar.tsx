@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const navLinks = [
-  { label: "Admission", href: "#admission" },
-  { label: "Blog", href: "#blog" },
-  { label: "About", href: "#about" },
-  { label: "Contact", href: "#contact" },
+  { label: "Admission", href: "/admission" },
+  { label: "Blog", href: "/blog" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export default function Navbar() {
@@ -14,25 +15,25 @@ export default function Navbar() {
   return (
     <header className="w-full border-b border-white/10 bg-gradient-to-r from-[#a44f18] via-[#c96a2b] to-[#b85d22] shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
       <div className="flex h-20 items-center justify-between px-5 sm:px-8 lg:px-12 xl:px-16">
-        <a
-          href="#home"
+        <Link
+          to="/"
           className="shrink-0 text-[1.35rem] font-normal tracking-[0.14em] text-[#fff7ef] transition-opacity duration-300 hover:opacity-85 sm:text-[1.55rem]"
           style={{ fontFamily: '"Cormorant Garamond", "Times New Roman", serif' }}
           aria-label="Nure Arushi home"
         >
           Nure Arushi
-        </a>
+        </Link>
 
         <nav className="hidden items-center gap-9 md:flex" aria-label="Primary navigation">
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.label}
-              href={link.href}
+              to={link.href}
               className="relative text-sm font-medium tracking-[0.14em] text-[#fff7ef]/90 transition-colors duration-300 hover:text-white after:absolute after:-bottom-2 after:left-0 after:h-px after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full"
               style={{ letterSpacing: "0.14em" }}
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -56,14 +57,14 @@ export default function Navbar() {
       >
         <nav className="flex flex-col px-5 py-4 sm:px-8" aria-label="Mobile navigation">
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.label}
-              href={link.href}
+              to={link.href}
               onClick={() => setOpen(false)}
               className="border-b border-white/10 px-1 py-4 text-sm font-medium tracking-[0.14em] text-[#fff7ef]/90 transition-colors duration-300 hover:text-white"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
       </div>
