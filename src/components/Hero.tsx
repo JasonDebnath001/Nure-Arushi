@@ -124,7 +124,7 @@ export default function Hero() {
             </h1>
 
             <p className="hero-copy mt-6 max-w-xl text-left text-base leading-7 text-white/75 sm:text-lg md:text-xl xl:text-[1.15rem]">
-              I’m Nure Arushi, and I create educational content that helps
+              I’m Nure Arushi, and I create Biology educational content that helps
               students move forward with confidence.
             </p>
 
