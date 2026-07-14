@@ -1,202 +1,201 @@
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
+import { ArrowRight } from "lucide-react";
+
+const subjects = [
+  "Biology",
+  "Anatomy & Physiology",
+  "Community Health",
+  "Nursing Foundations",
+  "Nutrition",
+  "Mental Health",
+  "English & Communication",
+  "Child Health",
+];
+
+const trustPoints = [
+  {
+    label: "Founder-led",
+    value: "I teach directly.",
+  },
+  {
+    label: "Clear structure",
+    value: "You always know next.",
+  },
+  {
+    label: "Personal pace",
+    value: "No rushed chapters.",
+  },
+];
+
+const dashboardCards = [
+  {
+    label: "Pace",
+    value: "Calm",
+    copy: "I keep each chapter measured and direct.",
+  },
+  {
+    label: "Format",
+    value: "Structured",
+    copy: "I build a clean path through the syllabus.",
+  },
+  {
+    label: "Tone",
+    value: "Personal",
+    copy: "I speak to students, not a crowd.",
+  },
+];
 
 export default function Hero() {
-  const floatingItems = [
-    "📖",
-    "🩺",
-    "📚",
-    "🧠",
-    "💉",
-    "📝",
-    "🎓",
-    "📄",
-  ];
-
-  useGSAP(() => {
-    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-
-    tl.from(".hero-badge", {
-      y: 24,
-      opacity: 0,
-      duration: 0.6,
-    })
-      .from(
-        ".hero-title",
-        {
-          y: 40,
-          opacity: 0,
-          duration: 0.8,
-        },
-        "-=0.35",
-      )
-      .from(
-        ".hero-copy",
-        {
-          y: 24,
-          opacity: 0,
-          duration: 0.7,
-        },
-        "-=0.35",
-      )
-      .from(
-        ".hero-actions",
-        {
-          y: 18,
-          opacity: 0,
-          stagger: 0.12,
-          duration: 0.55,
-        },
-        "-=0.3",
-      )
-      .from(
-        ".hero-image",
-        {
-          x: 60,
-          opacity: 0,
-          scale: 0.95,
-          duration: 1,
-        },
-        "-=0.85",
-      );
-
-    gsap.to(".hero-image-float", {
-      y: -10,
-      duration: 3.2,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-    });
-
-    gsap.to(".hero-glow", {
-      scale: 1.08,
-      opacity: 0.9,
-      duration: 4,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-    });
-
-    // Animate floating items in
-    gsap.from(".orbit-item", {
-      scale: 0,
-      opacity: 0,
-      duration: 0.8,
-      stagger: 0.08,
-      ease: "back.out(2)",
-      delay: 0.6,
-    });
-
-    // Individual floating
-    gsap.utils.toArray(".orbit-item").forEach((item, i) => {
-      gsap.to(item, {
-        y: gsap.utils.random(-15, 15),
-        x: gsap.utils.random(-8, 8),
-        rotation: gsap.utils.random(-8, 8),
-        duration: gsap.utils.random(2.5, 4),
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-        delay: i * 0.1,
-      });
-    });
-
-    // Whole orbit rotation
-    gsap.to(".orbit-wrapper", {
-      rotation: 360,
-      transformOrigin: "50% 50%",
-      duration: 80,
-      repeat: -1,
-      ease: "none",
-    });
-  });
-
   return (
-    <section className="relative overflow-hidden bg-[#031045]">
-      <div className="relative mx-auto min-h-screen w-full px-6 py-10 sm:px-8 lg:px-12 xl:px-16 2xl:px-24">
-        <div className="grid min-h-[calc(100vh-5rem)] grid-cols-1 gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
-          {/* LEFT SIDE */}
-          <div className="flex h-full flex-col justify-center items-start pt-16 sm:pt-20 lg:pt-0 lg:pr-8 xl:pr-16">
-            <h1 className="hero-title max-w-3xl text-left text-4xl font-bold leading-[1.05] text-white sm:text-5xl md:text-6xl xl:text-7xl 2xl:text-8xl">
-              Learn with clarity.
-              <br />
-              Prepare with confidence.
-            </h1>
+    <section className="relative overflow-hidden bg-[#031045] text-white">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.08),transparent_28%),radial-gradient(circle_at_80%_15%,rgba(201,106,43,0.18),transparent_20%),radial-gradient(circle_at_75%_80%,rgba(255,255,255,0.04),transparent_25%)]" />
+      <div className="pointer-events-none absolute -left-32 top-24 h-80 w-80 rounded-full bg-white/5 blur-[140px]" />
+      <div className="pointer-events-none absolute -right-28 bottom-0 h-96 w-96 rounded-full bg-[#c96a2b]/15 blur-[160px]" />
 
-            <p className="hero-copy mt-6 max-w-xl text-left text-base leading-7 text-white/75 sm:text-lg md:text-xl xl:text-[1.15rem]">
-              I’m Nure Arushi, and I create Biology educational content that helps
-              students move forward with confidence.
-            </p>
-
-            <div className="hero-actions mt-9 flex flex-wrap gap-4 sm:mt-10">
-              <button className="rounded-full bg-yellow-400 px-6 py-3.5 text-sm font-semibold text-[#031045] transition hover:scale-[1.03] sm:px-8 sm:py-4 sm:text-base">
-                Explore Courses
-              </button>
-
-              <button className="rounded-full border border-white/20 px-6 py-3.5 text-sm font-semibold text-white transition hover:border-yellow-400 hover:text-yellow-400 sm:px-8 sm:py-4 sm:text-base">
-                Watch Videos
-              </button>
+      <div className="relative mx-auto max-w-7xl px-6 py-8 sm:px-8 lg:px-12 xl:px-16">
+        <div className="grid min-h-[calc(100vh-4rem)] items-center gap-14 lg:grid-cols-[1.06fr_0.94fr]">
+          <div className="flex max-w-2xl flex-col justify-center pt-10 lg:pt-0">
+            <div className="inline-flex w-fit items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[0.72rem] font-medium uppercase tracking-[0.32em] text-white/70 backdrop-blur">
+              <span className="h-2 w-2 rounded-full bg-[#c96a2b]" />
+              Founder-led ANM/GNM preparation
             </div>
 
-            <div className="mt-10 hidden w-full max-w-md border-t border-white/10 pt-6 text-sm text-white/55 sm:block xl:mt-12">
-              Education made simple, practical, and easy to follow.
+            <h1 className="serif-display mt-6 max-w-[11ch] text-5xl font-semibold leading-[0.92] tracking-[-0.05em] text-white sm:text-6xl md:text-7xl xl:text-8xl">
+              ANM/GNM,
+              <br />
+              taught with clarity.
+            </h1>
+
+            <p className="mt-6 max-w-[34rem] text-base leading-7 text-white/76 sm:text-lg">
+              I teach Biology personally. I built MedhaUp for calm, structured
+              preparation.
+            </p>
+
+            <p className="mt-3 max-w-[32rem] text-sm leading-7 text-white/58 sm:text-base">
+              I keep every chapter direct. I keep you clear on what comes next.
+            </p>
+
+            <div className="mt-9">
+              <button
+                type="button"
+                className="inline-flex items-center gap-2 rounded-full bg-[#c96a2b] px-7 py-3.5 text-sm font-semibold text-white shadow-[0_18px_45px_rgba(201,106,43,0.26)] transition hover:-translate-y-0.5 hover:bg-[#b85d22]"
+              >
+                Start Your Admission
+                <ArrowRight className="h-4 w-4" />
+              </button>
+
+              <p className="mt-4 text-xs uppercase tracking-[0.28em] text-white/38">
+                One clear path. No extra noise.
+              </p>
+            </div>
+
+            <div className="mt-10 grid gap-3 sm:grid-cols-3">
+              {trustPoints.map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-[1.5rem] border border-white/10 bg-white/5 px-4 py-4 shadow-[0_16px_40px_rgba(0,0,0,0.08)] backdrop-blur"
+                >
+                  <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-white/42">
+                    {item.label}
+                  </p>
+                  <p className="mt-3 text-sm leading-6 text-white/82">
+                    {item.value}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              {subjects.map((subject) => (
+                <span
+                  key={subject}
+                  className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/72 backdrop-blur"
+                >
+                  {subject}
+                </span>
+              ))}
             </div>
           </div>
 
-          {/* RIGHT SIDE */}
-          <div className="relative flex h-full items-end justify-start lg:items-center lg:justify-center">
-            <div className="hero-glow absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-yellow-400/20 blur-[140px]" />
+          <div className="relative mx-auto w-full max-w-[38rem] lg:ml-auto">
+            <div className="absolute inset-10 rounded-full bg-[#c96a2b]/15 blur-[120px]" />
 
-            {/* Orbit */}
-            <div className="orbit-wrapper absolute left-1/2 top-1/2 z-20 h-[560px] w-[560px] -translate-x-1/2 -translate-y-1/2">
-              {floatingItems.map((icon, i) => {
-                const angle = (360 / floatingItems.length) * i;
-                const radius = 220;
+            <div className="relative overflow-hidden rounded-[2.75rem] border border-white/10 bg-white/6 p-4 shadow-[0_35px_100px_rgba(0,0,0,0.34)] backdrop-blur-xl">
+              <div className="flex items-center justify-between px-2 pb-4">
+                <span className="text-[0.7rem] uppercase tracking-[0.3em] text-white/45">
+                  Founder panel
+                </span>
+                <span className="text-[0.7rem] uppercase tracking-[0.3em] text-[#c96a2b]">
+                  MedhaUp
+                </span>
+              </div>
 
-                const x = Math.cos((angle * Math.PI) / 180) * radius;
-                const y = Math.sin((angle * Math.PI) / 180) * radius;
+              <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+                <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#091a4d]">
+                  <img
+                    src="/nure-arushi.png"
+                    alt="Nure Arushi"
+                    className="aspect-[4/5] w-full object-cover object-top"
+                  />
 
-                return (
-                  <div
-                    key={i}
-                    className="orbit-item absolute flex items-center justify-center"
-                    style={{
-                      left: `calc(50% + ${x}px)`,
-                      top: `calc(50% + ${y}px)`,
-                      transform: "translate(-50%, -50%)",
-                    }}
-                  >
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl text-3xl shadow-xl text-white">
-                      {icon}
-                    </div>
+                  <div className="absolute inset-x-4 bottom-4 rounded-[1.4rem] border border-white/10 bg-[#031045]/82 px-4 py-3 backdrop-blur-md">
+                    <p className="text-[0.68rem] uppercase tracking-[0.28em] text-white/48">
+                      My promise
+                    </p>
+                    <p className="mt-2 text-lg leading-tight text-white sm:text-xl">
+                      I’ll guide you through every chapter.
+                    </p>
                   </div>
-                );
-              })}
-            </div>
+                </div>
 
-            {/* Mobile */}
-            <div className="hero-image hero-image-float relative z-30 w-full max-w-[320px] sm:max-w-[380px] md:max-w-[440px] lg:hidden">
-              <img
-                src="/nure-arushi.png"
-                alt="Nure Arushi"
-                className="h-auto w-full object-contain drop-shadow-[0_28px_45px_rgba(0,0,0,0.45)]"
-              />
-            </div>
+                <div className="flex flex-col gap-4">
+                  <div className="rounded-[1.75rem] border border-white/10 bg-white/6 p-5">
+                    <p className="text-[0.7rem] uppercase tracking-[0.28em] text-white/45">
+                      What I teach
+                    </p>
+                    <p className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-white">
+                      Biology first.
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-white/68">
+                      Clear fundamentals. Calm pace. No rushed chapters.
+                    </p>
+                  </div>
 
-            {/* Desktop */}
-            <div className="hero-image hero-image-float relative z-30 hidden w-full max-w-[560px] lg:block xl:max-w-[680px] 2xl:max-w-[780px]">
-              <img
-                src="/nure-arushi.png"
-                alt="Nure Arushi"
-                className="h-auto w-full object-contain drop-shadow-[0_34px_60px_rgba(0,0,0,0.48)]"
-              />
+                  <div className="rounded-[1.75rem] border border-white/10 bg-white/6 p-5">
+                    <p className="text-[0.7rem] uppercase tracking-[0.28em] text-white/45">
+                      What students feel
+                    </p>
+                    <p className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-white">
+                      Calm, not crowded.
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-white/68">
+                      You always know what to study next.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 grid gap-4 sm:grid-cols-3">
+                {dashboardCards.map((card) => (
+                  <div
+                    key={card.label}
+                    className="rounded-[1.5rem] border border-white/10 bg-[#031045]/55 px-4 py-4"
+                  >
+                    <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-white/42">
+                      {card.label}
+                    </p>
+                    <p className="mt-3 text-base font-semibold tracking-[-0.02em] text-white">
+                      {card.value}
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-white/65">
+                      {card.copy}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-      <div className="pointer-events-none absolute -left-32 top-16 h-72 w-72 rounded-full bg-blue-500/10 blur-[120px]" />
-      <div className="pointer-events-none absolute bottom-0 right-0 h-80 w-80 rounded-full bg-yellow-400/10 blur-[140px]" />
     </section>
   );
 }
