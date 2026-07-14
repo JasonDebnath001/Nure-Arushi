@@ -2,292 +2,349 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ArrowRight } from "lucide-react";
 
-const curriculum = [
+const subjects = [
   "Biology",
   "Anatomy & Physiology",
   "Community Health",
   "Nursing Foundations",
   "Nutrition",
-  "Child Health",
   "Mental Health",
   "English & Communication",
+  "Child Health",
 ];
 
-export default function MedhaUpSection() {
-  useGSAP(() => {
-    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+const trustPoints = [
+  {
+    label: "Founder-led",
+    value: "I teach directly.",
+  },
+  {
+    label: "Clear structure",
+    value: "You always know next.",
+  },
+  {
+    label: "Personal pace",
+    value: "No rushed chapters.",
+  },
+];
 
-    tl.from(".medhaup-rail", {
-      scaleY: 0,
-      transformOrigin: "top center",
-      duration: 0.75,
+const dashboardCards = [
+  {
+    label: "Pace",
+    value: "Calm",
+    copy: "I keep each chapter measured and direct.",
+  },
+  {
+    label: "Format",
+    value: "Structured",
+    copy: "I build a clean path through the syllabus.",
+  },
+  {
+    label: "Tone",
+    value: "Personal",
+    copy: "I speak to students, not a crowd.",
+  },
+];
+
+export default function Hero() {
+  useGSAP(() => {
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    if (prefersReducedMotion) return;
+
+    const tl = gsap.timeline({
+      defaults: { ease: "power3.out" },
+    });
+
+    tl.from(".hero-badge", {
+      y: 16,
+      opacity: 0,
+      duration: 0.55,
     })
       .from(
-        ".medhaup-kicker",
+        ".hero-title-line",
         {
-          y: 18,
+          y: 26,
           opacity: 0,
-          duration: 0.5,
+          duration: 0.8,
+          stagger: 0.08,
         },
-        "-=0.15",
+        "-=0.2"
       )
       .from(
-        ".medhaup-title",
+        ".hero-copy",
         {
-          y: 42,
+          y: 14,
           opacity: 0,
-          duration: 0.9,
+          duration: 0.65,
         },
-        "-=0.2",
+        "-=0.35"
       )
       .from(
-        ".medhaup-copy",
+        ".hero-cta",
         {
-          y: 24,
-          opacity: 0,
-          duration: 0.7,
-        },
-        "-=0.35",
-      )
-      .from(
-        ".medhaup-subline",
-        {
-          y: 18,
+          y: 12,
           opacity: 0,
           duration: 0.55,
         },
-        "-=0.25",
+        "-=0.25"
       )
       .from(
-        ".medhaup-separator",
-        {
-          scaleX: 0,
-          transformOrigin: "left center",
-          duration: 0.65,
-        },
-        "-=0.15",
-      )
-      .from(
-        ".medhaup-curriculum-item",
+        ".trust-card",
         {
           y: 16,
           opacity: 0,
-          stagger: 0.06,
-          duration: 0.45,
-        },
-        "-=0.15",
-      )
-      .from(
-        ".medhaup-actions",
-        {
-          y: 18,
-          opacity: 0,
-          stagger: 0.08,
           duration: 0.5,
+          stagger: 0.08,
         },
-        "-=0.15",
+        "-=0.2"
       )
       .from(
-        ".medhaup-panel",
+        ".subject-chip",
         {
-          x: 42,
+          y: 10,
+          opacity: 0,
+          duration: 0.35,
+          stagger: 0.03,
+        },
+        "-=0.2"
+      )
+      .from(
+        ".hero-panel",
+        {
+          x: 24,
           opacity: 0,
           scale: 0.985,
-          duration: 0.95,
+          duration: 0.9,
         },
-        "-=0.95",
+        "-=0.9"
       );
 
-    gsap.to(".medhaup-soft-glow", {
-      y: -10,
+    gsap.to(".hero-glow", {
+      scale: 1.06,
+      opacity: 0.95,
       duration: 4.5,
       repeat: -1,
       yoyo: true,
       ease: "sine.inOut",
     });
 
-    gsap.to(".medhaup-logo-float", {
-      y: -6,
-      duration: 3.4,
+    gsap.to(".floating-panel", {
+      y: -8,
+      duration: 4.2,
       repeat: -1,
       yoyo: true,
       ease: "sine.inOut",
     });
+
+    gsap.to(".hero-portrait", {
+      y: -6,
+      duration: 3.6,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+    });
+
+    gsap.to(".hero-mini-card-1", {
+      y: -5,
+      x: 2,
+      duration: 4.8,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+    });
+
+    gsap.to(".hero-mini-card-2", {
+      y: 5,
+      x: -2,
+      duration: 5.2,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+    });
+
+    const onMove = (e: MouseEvent) => {
+      const panel = document.querySelector(".hero-panel");
+      if (!panel) return;
+
+      const rect = panel.getBoundingClientRect();
+      const dx = (e.clientX - (rect.left + rect.width / 2)) / rect.width;
+      const dy = (e.clientY - (rect.top + rect.height / 2)) / rect.height;
+
+      gsap.to(".hero-portrait-wrap", {
+        x: dx * 10,
+        y: dy * 10,
+        duration: 0.45,
+        ease: "power2.out",
+      });
+
+      gsap.to(".hero-glow", {
+        x: dx * 18,
+        y: dy * 18,
+        duration: 0.6,
+        ease: "power2.out",
+      });
+    };
+
+    window.addEventListener("mousemove", onMove);
+
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+    };
   });
 
   return (
-    <section className="relative overflow-hidden bg-white px-6 py-24 sm:px-8 lg:px-12 xl:px-16">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_20%,rgba(3,16,69,0.05),transparent_28%),radial-gradient(circle_at_88%_82%,rgba(255,193,7,0.08),transparent_24%)]" />
+    <section className="relative overflow-hidden bg-[#031045] text-white">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.08),transparent_28%),radial-gradient(circle_at_80%_15%,rgba(201,106,43,0.18),transparent_20%),radial-gradient(circle_at_75%_80%,rgba(255,255,255,0.04),transparent_25%)]" />
+      <div className="pointer-events-none hero-glow absolute -left-32 top-24 h-80 w-80 rounded-full bg-white/5 blur-[140px]" />
+      <div className="pointer-events-none absolute -right-28 bottom-0 h-96 w-96 rounded-full bg-[#c96a2b]/15 blur-[160px]" />
 
-      <div className="mx-auto max-w-7xl">
-        <div className="grid gap-12 lg:grid-cols-[72px_1.12fr_0.88fr] lg:items-center">
-          <div className="medhaup-rail hidden h-full lg:flex lg:flex-col lg:items-center lg:justify-between">
-            <div className="h-40 w-px bg-gradient-to-b from-[#031045] via-[#031045]/25 to-transparent" />
-            <div className="flex -rotate-90 items-center gap-3 whitespace-nowrap">
-              <span className="text-xs font-semibold uppercase tracking-[0.42em] text-slate-500">
-                MedhaUp
-              </span>
-              <span className="h-px w-16 bg-slate-300" />
-              <span className="text-xs uppercase tracking-[0.28em] text-slate-400">
-                01
-              </span>
-            </div>
-            <div className="h-24 w-px bg-gradient-to-t from-[#031045] via-[#031045]/25 to-transparent" />
-          </div>
-
-          <div className="relative">
-            <div className="medhaup-kicker inline-flex items-center gap-3 rounded-full border border-slate-200 bg-white px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-[0.32em] text-slate-500 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
-              <span className="h-2 w-2 rounded-full bg-[#031045]" />
-              A learning platform by Nure Arushi
+      <div className="relative mx-auto max-w-7xl px-6 py-8 sm:px-8 lg:px-12 xl:px-16">
+        <div className="grid min-h-[calc(100vh-4rem)] items-center gap-14 lg:grid-cols-[1.06fr_0.94fr]">
+          <div className="flex max-w-2xl flex-col justify-center pt-10 lg:pt-0">
+            <div className="hero-badge inline-flex w-fit items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[0.72rem] font-medium uppercase tracking-[0.32em] text-white/70 backdrop-blur">
+              <span className="h-2 w-2 rounded-full bg-[#c96a2b]" />
+              Founder-led ANM/GNM preparation
             </div>
 
-            <h2 className="medhaup-title mt-7 max-w-4xl text-4xl font-semibold leading-[0.98] text-[#031045] sm:text-5xl lg:text-7xl">
-              One platform.
-              <br />
-              Full ANM/GNM preparation.
-              <br />
-              Biology, taught with personal clarity.
-            </h2>
+            <h1 className="mt-6 max-w-[11ch] text-5xl font-semibold leading-[0.92] tracking-[-0.05em] text-white sm:text-6xl md:text-7xl xl:text-8xl">
+              <span className="hero-title-line serif-display block">
+                ANM/GNM,
+              </span>
+              <span className="hero-title-line serif-display block">
+                taught with clarity.
+              </span>
+            </h1>
 
-            <p className="medhaup-copy mt-7 max-w-2xl text-lg leading-8 text-slate-600 sm:text-xl">
-              MedhaUp brings together the subjects students need for ANM/GNM
-              preparation in one calm, structured learning space. Biology is
-              Nure Arushi’s signature strength, and the rest of the curriculum
-              follows the same focused, exam-ready teaching philosophy.
+            <p className="hero-copy mt-6 max-w-[34rem] text-base leading-7 text-white/76 sm:text-lg">
+              I teach Biology personally. I built MedhaUp for calm, structured
+              preparation.
             </p>
 
-            <p className="medhaup-subline mt-6 max-w-xl text-sm leading-7 text-slate-500">
-              Built as her own education brand, MedhaUp is designed to feel
-              personal, refined, and serious from the first glance.
+            <p className="mt-3 max-w-[32rem] text-sm leading-7 text-white/58 sm:text-base">
+              I keep every chapter direct. I keep you clear on what comes next.
             </p>
 
-            <div className="medhaup-separator mt-10 h-px w-full bg-gradient-to-r from-[#031045] via-[#031045]/25 to-transparent" />
+            <div className="hero-cta mt-9">
+              <button
+                type="button"
+                className="inline-flex items-center gap-2 rounded-full bg-[#c96a2b] px-7 py-3.5 text-sm font-semibold text-white shadow-[0_18px_45px_rgba(201,106,43,0.26)] transition hover:-translate-y-0.5 hover:bg-[#b85d22]"
+              >
+                Start Your Admission
+                <ArrowRight className="h-4 w-4" />
+              </button>
 
-            <div className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-3 text-[0.95rem] text-slate-700">
-              {curriculum.map((item, index) => (
-                <div key={item} className="medhaup-curriculum-item flex items-center gap-4">
-                  <span className="font-medium tracking-[0.02em]">{item}</span>
-                  {index !== curriculum.length - 1 ? (
-                    <span className="text-slate-300">•</span>
-                  ) : null}
+              <p className="mt-4 text-xs uppercase tracking-[0.28em] text-white/38">
+                One clear path. No extra noise.
+              </p>
+            </div>
+
+            <div className="mt-10 grid gap-3 sm:grid-cols-3">
+              {trustPoints.map((item) => (
+                <div
+                  key={item.label}
+                  className="trust-card rounded-[1.5rem] border border-white/10 bg-white/5 px-4 py-4 shadow-[0_16px_40px_rgba(0,0,0,0.08)] backdrop-blur"
+                >
+                  <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-white/42">
+                    {item.label}
+                  </p>
+                  <p className="mt-3 text-sm leading-6 text-white/82">
+                    {item.value}
+                  </p>
                 </div>
               ))}
             </div>
 
-            <div className="mt-10 grid gap-5 sm:grid-cols-2">
-              <div className="rounded-[1.6rem] border border-slate-200 bg-white px-6 py-5 shadow-[0_16px_40px_rgba(15,23,42,0.06)]">
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
-                  Signature strength
-                </p>
-                <p className="mt-3 text-2xl font-semibold text-[#031045]">
-                  Biology, taught personally.
-                </p>
-                <p className="mt-3 text-sm leading-7 text-slate-600">
-                  Clear concepts, strong fundamentals, and focused guidance
-                  from Nure Arushi herself.
-                </p>
-              </div>
-
-              <div className="rounded-[1.6rem] border border-slate-200 bg-white px-6 py-5 shadow-[0_16px_40px_rgba(15,23,42,0.06)]">
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
-                  Full curriculum
-                </p>
-                <p className="mt-3 text-2xl font-semibold text-[#031045]">
-                  Every major subject in one place.
-                </p>
-                <p className="mt-3 text-sm leading-7 text-slate-600">
-                  Students get the complete ANM/GNM journey without scattered
-                  coaching or fragmented notes.
-                </p>
-              </div>
-            </div>
-
-            <div className="medhaup-actions mt-10 flex flex-wrap gap-4">
-              <button className="inline-flex items-center gap-2 rounded-full bg-[#031045] px-7 py-3.5 text-sm font-semibold text-white transition hover:scale-[1.02] hover:bg-[#061636]">
-                Take Admission
-                <ArrowRight className="h-4 w-4" />
-              </button>
-
-              <button className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-7 py-3.5 text-sm font-semibold text-[#031045] transition hover:border-[#031045] hover:bg-slate-50">
-                Explore MedhaUp
-              </button>
+            <div className="mt-8 flex flex-wrap gap-3">
+              {subjects.map((subject) => (
+                <span
+                  key={subject}
+                  className="subject-chip rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/72 backdrop-blur"
+                >
+                  {subject}
+                </span>
+              ))}
             </div>
           </div>
 
-          <div className="relative">
-            <div className="medhaup-soft-glow absolute -left-10 top-10 h-36 w-36 rounded-full bg-[#031045]/5 blur-3xl" />
-            <div className="medhaup-soft-glow absolute -right-6 bottom-8 h-44 w-44 rounded-full bg-amber-400/10 blur-3xl" />
+          <div className="hero-panel relative mx-auto w-full max-w-[38rem] lg:ml-auto">
+            <div className="absolute inset-10 rounded-full bg-[#c96a2b]/15 blur-[120px]" />
 
-            <div className="medhaup-panel relative overflow-hidden rounded-[2.35rem] border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#fbfcff_54%,#f4f7ff_100%)] p-7 shadow-[0_24px_70px_rgba(15,23,42,0.08)]">
-              <div className="flex items-start justify-between gap-6">
-                <div className="max-w-sm">
-                  <p className="text-xs font-semibold uppercase tracking-[0.34em] text-slate-500">
-                    MedhaUp
-                  </p>
-                  <h3 className="mt-4 text-3xl font-semibold leading-tight text-[#031045] sm:text-4xl">
-                    A private platform with a quiet, premium voice.
-                  </h3>
-                </div>
+            <div className="floating-panel relative overflow-hidden rounded-[2.75rem] border border-white/10 bg-white/6 p-4 shadow-[0_35px_100px_rgba(0,0,0,0.34)] backdrop-blur-xl">
+              <div className="flex items-center justify-between px-2 pb-4">
+                <span className="text-[0.7rem] uppercase tracking-[0.3em] text-white/45">
+                  Founder panel
+                </span>
+                <span className="text-[0.7rem] uppercase tracking-[0.3em] text-[#c96a2b]">
+                  MedhaUp
+                </span>
+              </div>
 
-                <div className="medhaup-logo-float flex h-18 w-18 shrink-0 items-center justify-center rounded-[1.4rem] border border-slate-200 bg-white shadow-[0_14px_40px_rgba(15,23,42,0.08)]">
+              <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
+                <div className="hero-portrait-wrap relative overflow-hidden rounded-[2rem] border border-white/10 bg-[#091a4d]">
                   <img
-                    src="/medhaup-logo.png"
-                    alt="MedhaUp logo"
-                    className="h-11 w-11 object-contain"
+                    src="/nure-arushi.png"
+                    alt="Nure Arushi"
+                    className="hero-portrait aspect-[4/5] w-full object-cover object-top"
                   />
+
+                  <div className="absolute inset-x-4 bottom-4 rounded-[1.4rem] border border-white/10 bg-[#031045]/82 px-4 py-3 backdrop-blur-md">
+                    <p className="text-[0.68rem] uppercase tracking-[0.28em] text-white/48">
+                      My promise
+                    </p>
+                    <p className="mt-2 text-lg leading-tight text-white sm:text-xl">
+                      I’ll guide you through every chapter.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-4">
+                  <div className="hero-mini-card-1 rounded-[1.75rem] border border-white/10 bg-white/6 p-5">
+                    <p className="text-[0.7rem] uppercase tracking-[0.28em] text-white/45">
+                      What I teach
+                    </p>
+                    <p className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-white">
+                      Biology first.
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-white/68">
+                      Clear fundamentals. Calm pace. No rushed chapters.
+                    </p>
+                  </div>
+
+                  <div className="hero-mini-card-2 rounded-[1.75rem] border border-white/10 bg-white/6 p-5">
+                    <p className="text-[0.7rem] uppercase tracking-[0.28em] text-white/45">
+                      What students feel
+                    </p>
+                    <p className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-white">
+                      Calm, not crowded.
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-white/68">
+                      You always know what to study next.
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              <div className="mt-10 rounded-[1.75rem] bg-[#031045] p-6 text-white shadow-[0_20px_50px_rgba(3,16,69,0.22)]">
-                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-white/60">
-                  Founder-led teaching
-                </p>
-                <p className="mt-3 text-2xl font-semibold leading-tight sm:text-3xl">
-                  Nure Arushi shapes the learning experience herself.
-                </p>
-                <p className="mt-4 max-w-xl text-sm leading-7 text-white/75 sm:text-base">
-                  MedhaUp is where her Biology teaching becomes part of a
-                  complete ANM/GNM preparation journey, built with structure,
-                  clarity, and a polished brand identity.
-                </p>
+              <div className="mt-4 grid gap-4 sm:grid-cols-3">
+                {dashboardCards.map((card) => (
+                  <div
+                    key={card.label}
+                    className="rounded-[1.5rem] border border-white/10 bg-[#031045]/55 px-4 py-4"
+                  >
+                    <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-white/42">
+                      {card.label}
+                    </p>
+                    <p className="mt-3 text-base font-semibold tracking-[-0.02em] text-white">
+                      {card.value}
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-white/65">
+                      {card.copy}
+                    </p>
+                  </div>
+                ))}
               </div>
-
-              <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                <div className="rounded-[1.5rem] border border-slate-200 bg-white p-5">
-                  <p className="text-sm font-medium text-slate-500">
-                    Academic focus
-                  </p>
-                  <p className="mt-2 text-2xl font-semibold text-[#031045]">
-                    All ANM/GNM subjects
-                  </p>
-                  <p className="mt-3 text-sm leading-6 text-slate-600">
-                    One place for the full syllabus journey.
-                  </p>
-                </div>
-
-                <div className="rounded-[1.5rem] border border-slate-200 bg-white p-5">
-                  <p className="text-sm font-medium text-slate-500">
-                    Personal edge
-                  </p>
-                  <p className="mt-2 text-2xl font-semibold text-[#031045]">
-                    Biology by Nure Arushi
-                  </p>
-                  <p className="mt-3 text-sm leading-6 text-slate-600">
-                    Her strongest subject, taught with care.
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-4 rounded-[1.5rem] border border-slate-200 bg-white p-5">
-                <p className="text-sm font-medium text-slate-500">
-                  Brand position
-                </p>
-                <p className="mt-2 text-lg font-semibold text-[#031045]">
-                  Not a coaching class. A platform she owns and defines.
-                </p>
-              </div>
-
-              <div className="pointer-events-none absolute -bottom-24 -right-24 h-60 w-60 rounded-full bg-[#031045]/5 blur-3xl" />
             </div>
           </div>
         </div>
