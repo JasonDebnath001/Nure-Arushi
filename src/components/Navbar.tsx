@@ -13,24 +13,25 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="w-full border-b border-white/10 bg-gradient-to-r from-[#a44f18] via-[#c96a2b] to-[#b85d22] shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
-      <div className="flex h-20 items-center justify-between px-5 sm:px-8 lg:px-12 xl:px-16">
+    <header className="sticky top-0 z-40 w-full border-b border-white/8 bg-[#031045]/88 backdrop-blur-xl">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-12 xl:px-16">
         <Link
           to="/"
-          className="shrink-0 text-[1.35rem] font-normal tracking-[0.14em] text-[#fff7ef] transition-opacity duration-300 hover:opacity-85 sm:text-[1.55rem]"
-          style={{ fontFamily: '"Cormorant Garamond", "Times New Roman", serif' }}
+          className="serif-display shrink-0 text-[1.35rem] font-semibold tracking-[0.12em] text-white/95 transition-opacity duration-300 hover:opacity-85 sm:text-[1.5rem]"
           aria-label="Nure Arushi home"
         >
           Nure Arushi
         </Link>
 
-        <nav className="hidden items-center gap-9 md:flex" aria-label="Primary navigation">
+        <nav
+          className="hidden items-center gap-8 md:flex"
+          aria-label="Primary navigation"
+        >
           {navLinks.map((link) => (
             <Link
               key={link.label}
               to={link.href}
-              className="relative text-sm font-medium tracking-[0.14em] text-[#fff7ef]/90 transition-colors duration-300 hover:text-white after:absolute after:-bottom-2 after:left-0 after:h-px after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full"
-              style={{ letterSpacing: "0.14em" }}
+              className="relative text-[0.78rem] font-medium uppercase tracking-[0.24em] text-white/65 transition-colors duration-300 hover:text-white after:absolute after:-bottom-2 after:left-0 after:h-px after:w-0 after:bg-[#c96a2b] after:transition-all after:duration-300 hover:after:w-full"
             >
               {link.label}
             </Link>
@@ -40,7 +41,7 @@ export default function Navbar() {
         <button
           type="button"
           onClick={() => setOpen((prev) => !prev)}
-          className="inline-flex items-center justify-center text-[#fff7ef] transition-colors duration-300 hover:text-white md:hidden"
+          className="inline-flex items-center justify-center text-white/80 transition-colors duration-300 hover:text-white md:hidden"
           aria-label="Toggle navigation menu"
           aria-expanded={open}
           aria-controls="mobile-menu"
@@ -51,17 +52,20 @@ export default function Navbar() {
 
       <div
         id="mobile-menu"
-        className={`overflow-hidden border-t border-white/10 bg-[#bb6125] md:hidden transition-all duration-300 ${
+        className={`overflow-hidden border-t border-white/8 bg-[#06123a]/96 md:hidden transition-all duration-300 ${
           open ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <nav className="flex flex-col px-5 py-4 sm:px-8" aria-label="Mobile navigation">
+        <nav
+          className="mx-auto flex max-w-7xl flex-col px-5 py-4 sm:px-8"
+          aria-label="Mobile navigation"
+        >
           {navLinks.map((link) => (
             <Link
               key={link.label}
               to={link.href}
               onClick={() => setOpen(false)}
-              className="border-b border-white/10 px-1 py-4 text-sm font-medium tracking-[0.14em] text-[#fff7ef]/90 transition-colors duration-300 hover:text-white"
+              className="border-b border-white/8 px-1 py-4 text-[0.78rem] font-medium uppercase tracking-[0.24em] text-white/68 transition-colors duration-300 hover:text-white"
             >
               {link.label}
             </Link>
