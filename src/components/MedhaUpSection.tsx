@@ -1,324 +1,430 @@
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { ArrowRight } from "lucide-react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import {
+  Brain,
+  CircleHelp,
+  ClipboardCheck,
+  Video,
+  type LucideIcon,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
-const ADMISSION_PATH = "/admission";
+gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-const subjects = [
-  "Biology",
-  "Anatomy & Physiology",
-  "Community Health",
-  "Nursing Foundations",
-  "Nutrition",
-  "Mental Health",
-  "English & Communication",
-  "Child Health",
-];
+type MedhaUpSectionProps = {
+  logoSrc?: string;
+  educatorImageSrc?: string;
+  admissionPath?: string;
+};
 
-const trustPoints = [
-  "I teach every core Biology lesson.",
-  "I organise the syllabus for you.",
-  "I keep the pace steady.",
-];
+type FeatureKind = "live" | "test" | "doubt";
 
-const featureCards = [
+type Feature = {
+  kind: FeatureKind;
+  lines: string[];
+  Icon: LucideIcon;
+};
+
+const features: Feature[] = [
   {
-    number: "01",
-    title: "Clear explanations",
-    copy: "I begin with fundamentals before adding complexity.",
+    kind: "live",
+    lines: ["DAILY LIVE", "CLASSES"],
+    Icon: Video,
   },
   {
-    number: "02",
-    title: "A visible path",
-    copy: "I show you exactly what to study next.",
+    kind: "test",
+    lines: ["MOCK", "TESTS"],
+    Icon: ClipboardCheck,
   },
   {
-    number: "03",
-    title: "Steady progress",
-    copy: "I keep lessons focused, measured, and manageable.",
+    kind: "doubt",
+    lines: ["SPECIAL DOUBT", "SOLVING SESSIONS"],
+    Icon: Brain,
   },
 ];
 
-export default function MedhaUpSection() {
-  const sectionRef = useRef<HTMLElement>(null);
+function FeatureIcon({
+  kind,
+  Icon,
+}: {
+  kind: FeatureKind;
+  Icon: LucideIcon;
+}) {
+  if (kind === "live") {
+    return (
+      <div
+        aria-hidden="true"
+        className="flex size-[62px] items-center justify-center rounded-[12px] bg-[#ff3131] shadow-[0_9px_20px_rgba(255,49,49,0.18)] lg:size-[66px]"
+      >
+        <Icon
+          className="size-[35px] text-white"
+          strokeWidth={1.9}
+        />
+      </div>
+    );
+  }
+
+  if (kind === "test") {
+    return (
+      <div
+        aria-hidden="true"
+        className="flex size-[66px] items-center justify-center rounded-[16px] bg-[#e5e9ff] shadow-[0_9px_20px_rgba(77,101,215,0.15)] lg:size-[70px]"
+      >
+        <Icon
+          className="size-[42px] text-[#5a74df]"
+          strokeWidth={1.8}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      aria-hidden="true"
+      className="relative flex size-[70px] items-center justify-center text-[#9c64a1] lg:size-[76px]"
+    >
+      <Icon className="size-[58px]" strokeWidth={1.65} />
+
+      <span className="absolute -right-1 top-0 flex size-[31px] items-center justify-center rounded-full bg-white shadow-[0_4px_12px_rgba(76,33,91,0.18)]">
+        <CircleHelp className="size-[29px] text-[#bf78ac]" strokeWidth={2} />
+      </span>
+    </div>
+  );
+}
+
+function FeatureDivider({ index }: { index: number }) {
+  /*
+   * Mobile:
+   * Horizontal divider beneath each feature.
+   *
+   * Tablet:
+   * Vertical dividers between the first three features.
+   *
+   * Desktop:
+   * Vertical divider after every feature, matching the reference.
+   */
+  if (index < 2) {
+    return (
+      <span
+        aria-hidden="true"
+        className="
+          absolute bottom-0 left-1/2 h-[2px] w-[62%]
+          -translate-x-1/2 bg-[#fe7b30]
+          sm:bottom-auto sm:left-auto sm:right-0 sm:top-1/2
+          sm:h-[62%] sm:w-[3px] sm:translate-x-0 sm:-translate-y-1/2
+        "
+      />
+    );
+  }
+
+  return (
+    <span
+      aria-hidden="true"
+      className="
+        absolute bottom-0 left-1/2 h-[2px] w-[62%]
+        -translate-x-1/2 bg-[#fe7b30]
+        sm:hidden
+        lg:bottom-auto lg:left-auto lg:right-0 lg:top-1/2 lg:block
+        lg:h-[62%] lg:w-[3px] lg:translate-x-0 lg:-translate-y-1/2
+      "
+    />
+  );
+}
+
+export default function MedhaUpSection({
+  logoSrc = "/medhaup-logo.png",
+  educatorImageSrc = "/nure-arushi-medhaup.png",
+  admissionPath = "/admission",
+}: MedhaUpSectionProps) {
+  const sectionRef = useRef<HTMLElement | null>(null);
 
   useGSAP(
     () => {
+      const section = sectionRef.current;
+
+      if (!section) {
+        return;
+      }
+
       const prefersReducedMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
 
-      if (prefersReducedMotion) return;
+      if (prefersReducedMotion) {
+        return;
+      }
 
       const timeline = gsap.timeline({
         defaults: {
-          duration: 0.75,
+          duration: 0.8,
           ease: "power3.out",
+        },
+        scrollTrigger: {
+          trigger: section,
+          start: "top 72%",
+          once: true,
         },
       });
 
       timeline
-        .from("[data-medhaup-reveal='eyebrow']", {
-          y: 12,
-          opacity: 0,
+        .from("[data-medhaup-reveal='logo']", {
+          x: -35,
+          autoAlpha: 0,
         })
         .from(
           "[data-medhaup-reveal='headline']",
           {
-            y: 24,
-            opacity: 0,
-            duration: 0.9,
+            y: 35,
+            autoAlpha: 0,
+            duration: 0.95,
           },
-          "-=0.42",
+          "-=0.45",
         )
         .from(
-          "[data-medhaup-reveal='copy']",
+          "[data-medhaup-reveal='description']",
           {
-            y: 16,
-            opacity: 0,
+            y: 20,
+            autoAlpha: 0,
           },
-          "-=0.5",
+          "-=0.55",
         )
         .from(
-          "[data-medhaup-reveal='cta']",
+          "[data-medhaup-reveal='educator']",
           {
-            y: 14,
-            opacity: 0,
+            x: 70,
+            autoAlpha: 0,
+            scale: 0.97,
+            duration: 1,
           },
-          "-=0.48",
+          "-=0.8",
         )
         .from(
           "[data-medhaup-reveal='panel']",
           {
-            x: 22,
-            opacity: 0,
+            y: 45,
+            autoAlpha: 0,
             scale: 0.985,
-            duration: 0.95,
+            duration: 0.9,
           },
-          "-=0.78",
+          "-=0.55",
         )
         .from(
-          "[data-medhaup-reveal='support']",
+          "[data-medhaup-reveal='feature']",
           {
-            y: 22,
-            opacity: 0,
-            stagger: 0.1,
+            y: 25,
+            autoAlpha: 0,
+            stagger: 0.13,
+            duration: 0.65,
           },
-          "-=0.58",
+          "-=0.55",
+        )
+        .from(
+          "[data-medhaup-reveal='cta']",
+          {
+            x: 30,
+            autoAlpha: 0,
+            duration: 0.7,
+          },
+          "-=0.45",
         );
     },
-    { scope: sectionRef },
+    {
+      scope: sectionRef,
+    },
   );
 
   return (
     <section
       ref={sectionRef}
-      className="medhaup-section relative isolate overflow-hidden bg-[#06113f] text-[#fffaf3] selection:bg-[#c56b35] selection:text-white"
+      className="medhaup-section relative isolate overflow-hidden bg-[#fe7b30]"
       aria-labelledby="medhaup-heading"
     >
-      {/* Very subtle background depth */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_84%_14%,rgba(197,107,53,0.13),transparent_26%),radial-gradient(circle_at_12%_72%,rgba(255,255,255,0.055),transparent_30%)]" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/10" />
+      {/* Dark-blue upper area */}
+      <div className="relative overflow-hidden bg-[#1a0c70] lg:h-[clamp(500px,32.8125vw,525px)]">
+        <div className="relative mx-auto h-full max-w-[1600px] overflow-hidden px-5 sm:px-10 lg:px-0">
+          {/* Logo */}
+          <img
+            data-medhaup-reveal="logo"
+            src={logoSrc}
+            alt="MedhaUp"
+            draggable={false}
+            className="
+              relative z-20 w-[155px] pt-7
+              select-none object-contain
+              sm:w-[190px] sm:pt-9
+              lg:absolute lg:left-[5.3%] lg:top-[46px]
+              lg:w-[220px] lg:pt-0
+            "
+          />
 
-      <div className="relative mx-auto max-w-[1440px] px-5 py-20 sm:px-8 sm:py-24 lg:px-12 lg:py-28 xl:px-16 xl:py-32">
-        <div className="grid gap-y-14 lg:grid-cols-[minmax(0,1.08fr)_minmax(340px,0.92fr)] lg:gap-x-16 lg:gap-y-20 xl:gap-x-24">
-          {/* Main message */}
-          <div className="order-1 flex max-w-[46rem] flex-col justify-center lg:min-h-[37rem]">
-            <div
-              data-medhaup-reveal="eyebrow"
-              className="inline-flex w-fit items-center gap-3 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-white/55 sm:text-xs"
-            >
-              <span className="h-1.5 w-1.5 rounded-full bg-[#c56b35]" />
-              I built this for ANM/GNM students
-            </div>
-
+          {/* Main copy */}
+          <div
+            className="
+              relative z-20 mt-12 max-w-[720px] pb-4
+              sm:mt-14
+              lg:absolute lg:left-[5.3%] lg:top-[42.5%]
+              lg:mt-0 lg:w-[48%] lg:pb-0
+            "
+          >
             <h2
               id="medhaup-heading"
               data-medhaup-reveal="headline"
-              className="medhaup-display mt-7 max-w-[10.5ch] text-[clamp(3.6rem,8vw,6.9rem)] font-medium leading-[0.88] tracking-[-0.052em] text-[#fffaf3]"
+              className="
+                text-[clamp(2.45rem,8.6vw,3.25rem)]
+                font-bold uppercase leading-[0.96]
+                tracking-[0.015em] text-white
+                lg:text-[clamp(2.55rem,3.25vw,3.25rem)]
+              "
             >
-              ANM/GNM, taught with clarity.
+              <span className="block lg:whitespace-nowrap">
+                Bengal’s{" "}
+                <span className="text-[#fe7b30]">trusted</span> &amp;
+              </span>
+
+              <span className="mt-[0.48em] block text-[#fe7b30]">
+                Affordable
+              </span>
+
+              <span className="mt-[0.48em] block lg:whitespace-nowrap">
+                Education platform
+              </span>
             </h2>
 
-            <div
-              data-medhaup-reveal="copy"
-              className="mt-7 max-w-[38rem] space-y-3"
+            <p
+              data-medhaup-reveal="description"
+              className="
+                mt-6 max-w-[660px] text-[13px]
+                font-medium uppercase leading-[1.3]
+                tracking-[0.015em] text-white
+                sm:text-[15px]
+                lg:mt-5
+              "
             >
-              <p className="text-base leading-7 text-white/76 sm:text-lg sm:leading-8">
-                I teach Biology personally and guide every step of your
-                preparation.
-              </p>
-
-              <p className="max-w-[34rem] text-sm leading-6 text-white/48 sm:text-base sm:leading-7">
-                You’ll always know what to study next.
-              </p>
-            </div>
-
-            {/* The only conversion action */}
-            <div data-medhaup-reveal="cta" className="mt-9 sm:mt-10">
-              <Link
-                to={ADMISSION_PATH}
-                className="group inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-[#c56b35] px-6 py-3.5 text-sm font-semibold tracking-[-0.01em] text-white shadow-[0_18px_50px_rgba(197,107,53,0.24)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#b85e2d] hover:shadow-[0_22px_60px_rgba(197,107,53,0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fffaf3] focus-visible:ring-offset-4 focus-visible:ring-offset-[#06113f] sm:px-7"
-              >
-                Start Your Admission
-
-                <ArrowRight
-                  className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5"
-                  aria-hidden="true"
-                />
-              </Link>
-
-              <p className="mt-4 text-xs leading-5 text-white/40">
-                I’ll personally guide your next steps.
-              </p>
-            </div>
+              Unlock your potential with quality education and a effective
+              roadmap
+              <br className="hidden sm:block" /> towards your nursing dream.
+            </p>
           </div>
 
-          {/* Founder panel */}
-          <aside
-            data-medhaup-reveal="panel"
-            className="order-3 lg:order-2 lg:self-center"
-            aria-label="A note from Nure Arushi"
-          >
-            <div className="relative mx-auto max-w-[38rem] rounded-[2.25rem] border border-white/10 bg-white/[0.045] p-2.5 shadow-[0_32px_90px_rgba(0,0,0,0.24)] backdrop-blur-xl sm:p-3">
-              <div className="grid overflow-hidden rounded-[1.75rem] border border-white/8 bg-[#0a1848] sm:grid-cols-[0.88fr_1.12fr] lg:grid-cols-1">
-                <div className="relative min-h-[21rem] overflow-hidden sm:min-h-[27rem] lg:aspect-[4/3] lg:min-h-0">
-                  <img
-                    src="/nure-arushi.png"
-                    alt="Nure Arushi"
-                    className="absolute inset-0 h-full w-full object-cover object-top"
-                    loading="lazy"
-                  />
-
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#06113f]/55 via-transparent to-transparent" />
-
-                  <div className="absolute left-4 top-4 rounded-full border border-white/15 bg-[#06113f]/60 px-3 py-1.5 text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-white/70 backdrop-blur-md sm:left-5 sm:top-5">
-                    I teach personally
-                  </div>
-                </div>
-
-                <div className="flex min-h-[18rem] flex-col justify-between bg-[#fffaf3] p-6 text-[#06113f] sm:min-h-0 sm:p-7 lg:min-h-[17rem] lg:p-8">
-                  <div>
-                    <p className="text-[0.65rem] font-bold uppercase tracking-[0.22em] text-[#06113f]/42">
-                      A note from me
-                    </p>
-
-                    <blockquote className="medhaup-display mt-5 text-[2rem] font-medium leading-[1.02] tracking-[-0.035em] sm:text-[2.15rem]">
-                      “I built MedhaUp so your preparation feels calm, personal,
-                      and clear.”
-                    </blockquote>
-                  </div>
-
-                  <div className="mt-8 flex items-end justify-between gap-4 border-t border-[#06113f]/10 pt-5">
-                    <div>
-                      <p className="text-sm font-semibold">Nure Arushi</p>
-
-                      <p className="mt-1 text-xs text-[#06113f]/50">
-                        Founder &amp; educator
-                      </p>
-                    </div>
-
-                    <p className="max-w-[9rem] text-right text-xs leading-5 text-[#06113f]/48">
-                      I teach Biology personally.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </aside>
-
-          {/* Supporting information */}
-          <div className="order-2 space-y-5 lg:order-3 lg:col-span-2">
-            {/* Subjects and trust panel */}
-            <div
-              data-medhaup-reveal="support"
-              className="grid overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.035] shadow-[0_24px_70px_rgba(0,0,0,0.14)] lg:grid-cols-[1.45fr_0.55fr]"
-            >
-              <div className="p-5 sm:p-7 lg:p-8">
-                <div className="flex items-end justify-between gap-4">
-                  <div>
-                    <p className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-white/38">
-                      What I’ll cover
-                    </p>
-
-                    <h3 className="mt-2 text-lg font-semibold tracking-[-0.025em] text-white sm:text-xl">
-                      One complete learning path.
-                    </h3>
-                  </div>
-
-                  <span className="hidden text-xs text-white/28 sm:block">
-                    8 core areas
-                  </span>
-                </div>
-
-                <div className="mt-6 grid gap-x-8 sm:grid-cols-2">
-                  {subjects.map((subject, index) => (
-                    <div
-                      key={subject}
-                      className="flex min-h-12 items-center gap-3 border-t border-white/8 py-3"
-                    >
-                      <span className="w-6 shrink-0 text-[0.62rem] font-semibold tabular-nums text-[#c56b35]">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-
-                      <span className="text-sm leading-5 text-white/72">
-                        {subject}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="border-t border-white/10 bg-[#04103a]/55 p-5 sm:p-7 lg:border-l lg:border-t-0 lg:p-8">
-                <p className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-white/38">
-                  What you can expect
-                </p>
-
-                <div className="mt-6 space-y-6">
-                  {trustPoints.map((point) => (
-                    <div key={point} className="flex gap-3">
-                      <span className="mt-2 h-px w-5 shrink-0 bg-[#c56b35]" />
-
-                      <p className="max-w-[22rem] text-sm leading-6 text-white/68">
-                        {point}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Feature cards */}
-            <div className="grid gap-4 md:grid-cols-3">
-              {featureCards.map((card) => (
-                <article
-                  key={card.number}
-                  data-medhaup-reveal="support"
-                  className="group rounded-[1.75rem] border border-white/10 bg-white/[0.035] p-5 transition duration-300 hover:-translate-y-0.5 hover:border-white/15 hover:bg-white/[0.05] sm:p-6"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-[0.65rem] font-semibold tabular-nums tracking-[0.18em] text-[#c56b35]">
-                      {card.number}
-                    </span>
-
-                    <span className="h-1.5 w-1.5 rounded-full bg-white/15 transition-colors duration-300 group-hover:bg-[#c56b35]" />
-                  </div>
-
-                  <h3 className="mt-8 text-lg font-semibold tracking-[-0.025em] text-white">
-                    {card.title}
-                  </h3>
-
-                  <p className="mt-3 max-w-[31ch] text-sm leading-6 text-white/52">
-                    {card.copy}
-                  </p>
-                </article>
-              ))}
-            </div>
-          </div>
+          {/* Educator cutout */}
+          <img
+            data-medhaup-reveal="educator"
+            src={educatorImageSrc}
+            alt="Nure Arushi, MedhaUp educator"
+            draggable={false}
+            decoding="async"
+            className="
+              relative z-10 mx-auto mt-8 h-[320px]
+              w-full max-w-[430px] select-none
+              object-contain object-bottom
+              sm:h-[420px] sm:max-w-[520px]
+              lg:absolute lg:bottom-0 lg:right-[4.5%]
+              lg:mt-0 lg:h-[96%] lg:w-[36%]
+              lg:max-w-[520px]
+            "
+          />
         </div>
       </div>
+
+      {/* White features panel */}
+      <div
+        data-medhaup-reveal="panel"
+        className="
+          relative z-30 mx-auto -mt-7
+          grid w-[calc(100%_-_2rem)] grid-cols-1
+          overflow-hidden rounded-[38px] bg-white
+          shadow-[0_22px_55px_rgba(70,25,0,0.14)]
+          sm:grid-cols-3 sm:rounded-[58px]
+          lg:-mt-[7px] lg:h-[270px]
+          lg:w-[92%] lg:max-w-[1472px]
+          lg:grid-cols-[0.82fr_1fr_1.12fr_2fr]
+          lg:rounded-[100px] lg:shadow-none
+        "
+      >
+        {features.map((feature, index) => (
+          <article
+            key={feature.kind}
+            data-medhaup-reveal="feature"
+            className="
+              relative flex min-h-[150px]
+              flex-col items-center justify-center
+              gap-3 px-4 py-7 text-center
+              sm:min-h-[170px] sm:py-8
+              lg:min-h-0 lg:gap-3 lg:py-0
+            "
+          >
+            <FeatureIcon kind={feature.kind} Icon={feature.Icon} />
+
+            <h3
+              className="
+                text-[21px] font-bold uppercase
+                leading-[1.25] tracking-[-0.01em]
+                text-black
+                lg:text-[22px]
+              "
+            >
+              {feature.lines.map((line) => (
+                <span key={line} className="block">
+                  {line}
+                </span>
+              ))}
+            </h3>
+
+            <FeatureDivider index={index} />
+          </article>
+        ))}
+
+        {/* Admission CTA */}
+        <div
+          data-medhaup-reveal="cta"
+          className="
+            relative flex min-h-[155px]
+            items-center justify-center p-5
+            sm:col-span-3 sm:min-h-[150px] sm:px-12
+            lg:col-span-1 lg:min-h-0 lg:px-10 lg:py-0
+          "
+        >
+          {/* Tablet-only separator */}
+          <span
+            aria-hidden="true"
+            className="
+              absolute left-1/2 top-0 hidden
+              h-[3px] w-[78%] -translate-x-1/2
+              bg-[#fe7b30] sm:block lg:hidden
+            "
+          />
+
+          <Link
+            to={admissionPath}
+            aria-label="Take admission now"
+            className="
+              flex min-h-[78px] w-full max-w-[448px]
+              items-center justify-center rounded-full
+              bg-[#fe7b30] px-6 py-4 text-center
+              text-[clamp(1.55rem,6vw,2.1rem)]
+              font-bold uppercase leading-none text-white
+              shadow-[0_13px_30px_rgba(254,123,48,0.24)]
+              transition duration-300
+              hover:-translate-y-1
+              hover:bg-[#f36b20]
+              hover:shadow-[0_18px_35px_rgba(254,123,48,0.34)]
+              focus-visible:outline-none
+              focus-visible:ring-4
+              focus-visible:ring-[#1a0c70]
+              focus-visible:ring-offset-4
+              active:translate-y-0
+              lg:h-[106px] lg:text-[2.1rem]
+            "
+          >
+            Take admission now
+          </Link>
+        </div>
+      </div>
+
+      {/* Orange space beneath the panel */}
+      <div className="h-12 sm:h-16 lg:h-[112px]" aria-hidden="true" />
     </section>
   );
 }
