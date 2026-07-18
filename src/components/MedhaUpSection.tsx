@@ -251,11 +251,11 @@ export default function MedhaUpSection({
             alt="MedhaUp"
             draggable={false}
             className="
-              relative z-20 w-[155px] pt-7
+              relative z-20 w-[155px] pb-7
               select-none object-contain
-              sm:w-[190px] sm:pt-9
+              sm:w-[190px] sm:pt-0
               lg:absolute lg:left-[5.3%] lg:top-[46px]
-              lg:w-[220px] lg:pt-0
+              lg:w-[220px] lg:pb-0
             "
           />
 
