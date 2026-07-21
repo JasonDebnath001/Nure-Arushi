@@ -99,6 +99,7 @@ export default function Hero() {
                 src="/nure-arushi.png"
                 alt="Nure Arushi"
                 draggable={false}
+                fetchPriority="high"
                 className="h-auto w-full select-none object-contain object-bottom lg:max-h-[82vh]"
               />
             </div>
