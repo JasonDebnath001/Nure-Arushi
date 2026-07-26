@@ -1,5 +1,6 @@
 // src/components/TimelineSection.tsx
-import { useLayoutEffect, useRef } from "react";
+import { useRef } from "react";
+import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -111,14 +112,14 @@ export default function TimelineSection() {
     imageRefs.current[index] = el;
   };
 
-  useLayoutEffect(() => {
-    const section = sectionRef.current;
-    const pin = pinRef.current;
-    const line = linePathRef.current;
+  useGSAP(
+    () => {
+      const section = sectionRef.current;
+      const pin = pinRef.current;
+      const line = linePathRef.current;
 
-    if (!section || !pin || !line) return;
+      if (!section || !pin || !line) return;
 
-    const ctx = gsap.context(() => {
       const reduceMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
@@ -129,22 +130,54 @@ export default function TimelineSection() {
         strokeDashoffset: lineLength,
       });
 
-      textRefs.current.forEach((el, index) => {
+      textRefs.current.forEach((el) => {
         if (!el) return;
+
+        if (reduceMotion) {
+          el.classList.remove("absolute", "inset-0");
+          el.classList.add("relative", "mb-6", "w-full");
+        } else {
+          el.classList.remove("relative", "mb-6", "w-full");
+          el.classList.add("absolute", "inset-0");
+        }
+
         gsap.set(el, {
-          autoAlpha: index === 0 ? 1 : 0,
-          y: index === 0 ? 0 : 28,
-          scale: index === 0 ? 1 : 0.985,
-          filter: index === 0 ? "blur(0px)" : "blur(1px)",
+          autoAlpha: reduceMotion ? 1 : 0,
+          y: reduceMotion ? 0 : 28,
+          scale: reduceMotion ? 1 : 0.985,
+          filter: reduceMotion ? "blur(0px)" : "blur(1px)",
         });
       });
 
-      imageRefs.current.forEach((el, index) => {
+      imageRefs.current.forEach((el) => {
         if (!el) return;
+
+        if (reduceMotion) {
+          el.classList.remove("absolute", "inset-0");
+          el.classList.add(
+            "relative",
+            "mb-6",
+            "w-full",
+            "min-h-[18rem]",
+            "sm:min-h-[20rem]",
+            "lg:min-h-[24rem]",
+          );
+        } else {
+          el.classList.remove(
+            "relative",
+            "mb-6",
+            "w-full",
+            "min-h-[18rem]",
+            "sm:min-h-[20rem]",
+            "lg:min-h-[24rem]",
+          );
+          el.classList.add("absolute", "inset-0");
+        }
+
         gsap.set(el, {
-          autoAlpha: index === 0 ? 1 : 0,
-          y: index === 0 ? 0 : 22,
-          scale: index === 0 ? 1 : 0.985,
+          autoAlpha: reduceMotion ? 1 : 0,
+          y: reduceMotion ? 0 : 22,
+          scale: reduceMotion ? 1 : 0.985,
         });
       });
 
@@ -243,10 +276,9 @@ export default function TimelineSection() {
           );
         }
       }
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
+    },
+    { dependencies: [], scope: sectionRef },
+  );
 
   return (
     <section
