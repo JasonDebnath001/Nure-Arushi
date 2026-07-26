@@ -130,7 +130,7 @@ export default function TimelineSection() {
         strokeDashoffset: lineLength,
       });
 
-      textRefs.current.forEach((el) => {
+      textRefs.current.forEach((el, index) => {
         if (!el) return;
 
         if (reduceMotion) {
@@ -142,14 +142,14 @@ export default function TimelineSection() {
         }
 
         gsap.set(el, {
-          autoAlpha: reduceMotion ? 1 : 0,
-          y: reduceMotion ? 0 : 28,
-          scale: reduceMotion ? 1 : 0.985,
-          filter: reduceMotion ? "blur(0px)" : "blur(1px)",
+          autoAlpha: reduceMotion || index === 0 ? 1 : 0,
+          y: reduceMotion || index === 0 ? 0 : 28,
+          scale: reduceMotion || index === 0 ? 1 : 0.985,
+          filter: reduceMotion || index === 0 ? "blur(0px)" : "blur(1px)",
         });
       });
 
-      imageRefs.current.forEach((el) => {
+      imageRefs.current.forEach((el, index) => {
         if (!el) return;
 
         if (reduceMotion) {
@@ -175,9 +175,9 @@ export default function TimelineSection() {
         }
 
         gsap.set(el, {
-          autoAlpha: reduceMotion ? 1 : 0,
-          y: reduceMotion ? 0 : 22,
-          scale: reduceMotion ? 1 : 0.985,
+          autoAlpha: reduceMotion || index === 0 ? 1 : 0,
+          y: reduceMotion || index === 0 ? 0 : 22,
+          scale: reduceMotion || index === 0 ? 1 : 0.985,
         });
       });
 
