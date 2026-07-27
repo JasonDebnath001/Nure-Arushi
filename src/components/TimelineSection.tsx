@@ -4,7 +4,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 type TimelineItem = {
   eyebrow: string;
@@ -99,10 +99,18 @@ const timelineItems: TimelineItem[] = [
 
 export default function TimelineSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
+
+  /* Desktop (pinned) refs */
+  const desktopRef = useRef<HTMLDivElement | null>(null);
   const pinRef = useRef<HTMLDivElement | null>(null);
   const textRefs = useRef<(HTMLDivElement | null)[]>([]);
   const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
   const linePathRef = useRef<SVGPathElement | null>(null);
+
+  /* Mobile (stacked) refs */
+  const mobileListRef = useRef<HTMLOListElement | null>(null);
+  const mobileItemRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const railFillRef = useRef<HTMLDivElement | null>(null);
 
   const setTextRef = (index: number) => (el: HTMLDivElement | null) => {
     textRefs.current[index] = el;
@@ -112,259 +120,356 @@ export default function TimelineSection() {
     imageRefs.current[index] = el;
   };
 
+  const setMobileItemRef = (index: number) => (el: HTMLLIElement | null) => {
+    mobileItemRefs.current[index] = el;
+  };
+
   useGSAP(
     () => {
-      const section = sectionRef.current;
-      const pin = pinRef.current;
-      const line = linePathRef.current;
+      const mm = gsap.matchMedia();
 
-      if (!section || !pin || !line) return;
+      /* ------------------------------------------------------------------
+       * Desktop (lg and up): pinned, scroll-scrubbed timeline.
+       * Only runs when motion is allowed; reduced-motion users see the
+       * static stacked layout instead (handled purely in CSS below).
+       * ---------------------------------------------------------------- */
+      mm.add(
+        "(min-width: 1024px) and (prefers-reduced-motion: no-preference)",
+        () => {
+          const trigger = desktopRef.current;
+          const pin = pinRef.current;
+          const line = linePathRef.current;
 
-      const reduceMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches;
+          if (!trigger || !pin || !line) return;
 
-      const lineLength = line.getTotalLength();
-      gsap.set(line, {
-        strokeDasharray: lineLength,
-        strokeDashoffset: lineLength,
-      });
+          const lineLength = line.getTotalLength();
+          gsap.set(line, {
+            strokeDasharray: lineLength,
+            strokeDashoffset: lineLength,
+          });
 
-      textRefs.current.forEach((el, index) => {
-        if (!el) return;
+          textRefs.current.forEach((el, index) => {
+            if (!el) return;
+            gsap.set(el, {
+              autoAlpha: index === 0 ? 1 : 0,
+              y: index === 0 ? 0 : 28,
+              scale: index === 0 ? 1 : 0.985,
+              filter: index === 0 ? "blur(0px)" : "blur(1px)",
+            });
+          });
 
-        if (reduceMotion) {
-          el.classList.remove("absolute", "inset-0");
-          el.classList.add("relative", "mb-6", "w-full");
-        } else {
-          el.classList.remove("relative", "mb-6", "w-full");
-          el.classList.add("absolute", "inset-0");
-        }
+          imageRefs.current.forEach((el, index) => {
+            if (!el) return;
+            gsap.set(el, {
+              autoAlpha: index === 0 ? 1 : 0,
+              y: index === 0 ? 0 : 22,
+              scale: index === 0 ? 1 : 0.985,
+            });
+          });
 
-        gsap.set(el, {
-          autoAlpha: reduceMotion || index === 0 ? 1 : 0,
-          y: reduceMotion || index === 0 ? 0 : 28,
-          scale: reduceMotion || index === 0 ? 1 : 0.985,
-          filter: reduceMotion || index === 0 ? "blur(0px)" : "blur(1px)",
-        });
-      });
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger,
+              start: "top top",
+              end: () => `+=${window.innerHeight * (timelineItems.length - 1)}`,
+              pin,
+              scrub: 1,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+            },
+          });
 
-      imageRefs.current.forEach((el, index) => {
-        if (!el) return;
-
-        if (reduceMotion) {
-          el.classList.remove("absolute", "inset-0");
-          el.classList.add(
-            "relative",
-            "mb-6",
-            "w-full",
-            "min-h-[18rem]",
-            "sm:min-h-[20rem]",
-            "lg:min-h-[24rem]",
+          tl.to(
+            line,
+            {
+              strokeDashoffset: 0,
+              ease: "none",
+              duration: timelineItems.length - 1,
+            },
+            0,
           );
-        } else {
-          el.classList.remove(
-            "relative",
-            "mb-6",
-            "w-full",
-            "min-h-[18rem]",
-            "sm:min-h-[20rem]",
-            "lg:min-h-[24rem]",
-          );
-          el.classList.add("absolute", "inset-0");
-        }
 
-        gsap.set(el, {
-          autoAlpha: reduceMotion || index === 0 ? 1 : 0,
-          y: reduceMotion || index === 0 ? 0 : 22,
-          scale: reduceMotion || index === 0 ? 1 : 0.985,
-        });
-      });
+          for (let i = 1; i < timelineItems.length; i += 1) {
+            const at = i - 0.58;
 
-      if (reduceMotion) {
-        gsap.set(line, { strokeDashoffset: 0 });
-        return;
-      }
+            const prevText = textRefs.current[i - 1];
+            const nextText = textRefs.current[i];
+            const prevImage = imageRefs.current[i - 1];
+            const nextImage = imageRefs.current[i];
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: () => `+=${window.innerHeight * (timelineItems.length - 1)}`,
-          pin,
-          scrub: 1,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
+            if (prevText) {
+              tl.to(
+                prevText,
+                {
+                  autoAlpha: 0,
+                  y: -20,
+                  scale: 0.985,
+                  filter: "blur(1px)",
+                  duration: 0.45,
+                  ease: "power2.out",
+                },
+                at,
+              );
+            }
+
+            if (prevImage) {
+              tl.to(
+                prevImage,
+                {
+                  autoAlpha: 0,
+                  y: -16,
+                  scale: 0.985,
+                  duration: 0.45,
+                  ease: "power2.out",
+                },
+                at,
+              );
+            }
+
+            if (nextText) {
+              tl.fromTo(
+                nextText,
+                { autoAlpha: 0, y: 28, scale: 0.985, filter: "blur(1px)" },
+                {
+                  autoAlpha: 1,
+                  y: 0,
+                  scale: 1,
+                  filter: "blur(0px)",
+                  duration: 0.55,
+                  ease: "power3.out",
+                },
+                at + 0.12,
+              );
+            }
+
+            if (nextImage) {
+              tl.fromTo(
+                nextImage,
+                { autoAlpha: 0, y: 22, scale: 0.985 },
+                {
+                  autoAlpha: 1,
+                  y: 0,
+                  scale: 1,
+                  duration: 0.55,
+                  ease: "power3.out",
+                },
+                at + 0.12,
+              );
+            }
+          }
         },
-      });
-
-      tl.to(
-        line,
-        {
-          strokeDashoffset: 0,
-          ease: "none",
-          duration: timelineItems.length - 1,
-        },
-        0,
       );
 
-      for (let i = 1; i < timelineItems.length; i += 1) {
-        const at = i - 0.58;
+      /* ------------------------------------------------------------------
+       * Mobile / tablet (below lg): stacked timeline.
+       * Progress rail fills as you scroll; each milestone fades in once.
+       * ---------------------------------------------------------------- */
+      mm.add(
+        "(max-width: 1023px) and (prefers-reduced-motion: no-preference)",
+        () => {
+          const list = mobileListRef.current;
+          const fill = railFillRef.current;
 
-        const prevText = textRefs.current[i - 1];
-        const nextText = textRefs.current[i];
-        const prevImage = imageRefs.current[i - 1];
-        const nextImage = imageRefs.current[i];
+          if (fill && list) {
+            gsap.fromTo(
+              fill,
+              { scaleY: 0 },
+              {
+                scaleY: 1,
+                ease: "none",
+                transformOrigin: "top center",
+                scrollTrigger: {
+                  trigger: list,
+                  start: "top 75%",
+                  end: "bottom 75%",
+                  scrub: true,
+                },
+              },
+            );
+          }
 
-        if (prevText) {
-          tl.to(
-            prevText,
-            {
+          mobileItemRefs.current.forEach((el) => {
+            if (!el) return;
+            gsap.from(el, {
               autoAlpha: 0,
-              y: -20,
-              scale: 0.985,
-              filter: "blur(1px)",
-              duration: 0.45,
-              ease: "power2.out",
-            },
-            at,
-          );
-        }
-
-        if (prevImage) {
-          tl.to(
-            prevImage,
-            {
-              autoAlpha: 0,
-              y: -16,
-              scale: 0.985,
-              duration: 0.45,
-              ease: "power2.out",
-            },
-            at,
-          );
-        }
-
-        if (nextText) {
-          tl.fromTo(
-            nextText,
-            { autoAlpha: 0, y: 28, scale: 0.985, filter: "blur(1px)" },
-            {
-              autoAlpha: 1,
-              y: 0,
-              scale: 1,
-              filter: "blur(0px)",
-              duration: 0.55,
+              y: 26,
+              duration: 0.7,
               ease: "power3.out",
-            },
-            at + 0.12,
-          );
-        }
+              scrollTrigger: {
+                trigger: el,
+                start: "top 85%",
+                once: true,
+              },
+            });
+          });
+        },
+      );
 
-        if (nextImage) {
-          tl.fromTo(
-            nextImage,
-            { autoAlpha: 0, y: 22, scale: 0.985 },
-            {
-              autoAlpha: 1,
-              y: 0,
-              scale: 1,
-              duration: 0.55,
-              ease: "power3.out",
-            },
-            at + 0.12,
-          );
-        }
-      }
+      return () => mm.revert();
     },
-    { dependencies: [], scope: sectionRef },
+    { scope: sectionRef },
   );
 
   return (
     <section
       ref={sectionRef}
-      className="relative isolate overflow-hidden text-white"
-      style={{
-        backgroundColor: "#ff7c30",
-        minHeight: `calc(100svh * ${timelineItems.length})`,
-      }}
+      className="relative isolate overflow-hidden bg-[#ff7c30] text-white"
     >
-      <div className="pointer-events-none absolute inset-0 opacity-25 [background-image:linear-gradient(rgba(255,255,255,0.10)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.10)_1px,transparent_1px)] [background-size:72px_72px]" />
+      {/* Grid pattern backdrop */}
+      <div className="pointer-events-none absolute inset-0 opacity-25 [background-image:linear-gradient(rgba(255,255,255,0.10)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.10)_1px,transparent_1px)] [background-size:48px_48px] sm:[background-size:72px_72px]" />
 
-      <div ref={pinRef} className="relative flex h-[100svh] items-center">
-        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="mb-6 text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
+      {/* ================================================================
+          MOBILE / TABLET — stacked timeline (also shown on desktop for
+          reduced-motion users, where the pinned experience is hidden)
+          ================================================================ */}
+      <div className="relative lg:hidden lg:motion-reduce:block">
+        <div className="mx-auto w-full max-w-3xl px-4 py-14 sm:px-6 sm:py-16">
+          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
             Journey
           </h2>
 
-          <div className="grid gap-5 lg:grid-cols-[1fr_120px_1fr] lg:gap-7">
-            <div className="relative min-h-[18rem] sm:min-h-[20rem] lg:min-h-[34rem]">
-              {timelineItems.map((item, index) => (
-                <article
-                  key={item.title}
-                  ref={setTextRef(index)}
-                  className="absolute inset-0 flex items-center"
-                  style={{ willChange: "transform, opacity, filter" }}
-                >
-                  <div className="w-full rounded-[2rem] border border-white/14 bg-white/[0.08] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.16)] backdrop-blur-xl sm:p-7">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-white/58">
-                      {item.eyebrow}
-                    </p>
+          <ol ref={mobileListRef} className="relative mt-10 space-y-12 sm:mt-12 sm:space-y-14">
+            {/* Rail track */}
+            <span
+              aria-hidden="true"
+              className="absolute bottom-2 left-[9px] top-2 w-[3px] rounded-full bg-[#0d274f]/25 sm:left-[11px]"
+            />
+            {/* Rail progress fill */}
+            <div
+              ref={railFillRef}
+              aria-hidden="true"
+              className="absolute bottom-2 left-[9px] top-2 w-[3px] origin-top rounded-full bg-[#0d274f] sm:left-[11px]"
+            />
 
-                    <h3 className="mt-3 max-w-xl text-2xl font-semibold tracking-tight sm:text-3xl">
-                      {item.title}
-                    </h3>
-
-                    <p className="mt-4 max-w-xl text-sm leading-7 text-white/84 sm:text-[15px]">
-                      {item.description}
-                    </p>
-                  </div>
-                </article>
-              ))}
-            </div>
-
-            <div className="relative flex min-h-[10rem] items-center justify-center lg:min-h-[34rem]">
-              <svg
-                viewBox="0 0 120 620"
-                className="h-24 w-20 sm:h-28 sm:w-24 lg:h-full lg:w-[120px]"
-                aria-hidden="true"
+            {timelineItems.map((item, index) => (
+              <li
+                key={item.title}
+                ref={setMobileItemRef(index)}
+                className="relative pl-9 sm:pl-12"
               >
-                <path
-                  d="M60 18 C64 130 56 210 60 310 C64 410 56 490 60 602"
-                  fill="none"
-                  stroke="rgba(13,39,79,0.22)"
-                  strokeWidth="6"
-                  strokeLinecap="round"
-                />
-                <path
-                  ref={linePathRef}
-                  d="M60 18 C64 130 56 210 60 310 C64 410 56 490 60 602"
-                  fill="none"
-                  stroke="#0d274f"
-                  strokeWidth="6"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
-
-            <div className="relative min-h-[18rem] sm:min-h-[20rem] lg:min-h-[34rem]">
-              {timelineItems.map((item, index) => (
-                <figure
-                  key={item.image}
-                  ref={setImageRef(index)}
-                  className="absolute inset-0 overflow-hidden rounded-[2rem] border border-white/14 bg-white/[0.08] shadow-[0_24px_80px_rgba(0,0,0,0.18)]"
-                  style={{ willChange: "transform, opacity" }}
+                {/* Dot marker */}
+                <span
+                  aria-hidden="true"
+                  className="absolute left-0 top-1.5 flex size-[21px] items-center justify-center rounded-full bg-[#0d274f] shadow-[0_4px_12px_rgba(13,39,79,0.35)] sm:size-[25px]"
                 >
-                  <img
-                    src={item.image}
-                    alt={item.imageAlt}
-                    className="h-full w-full object-cover"
-                    loading={index === 0 ? "eager" : "lazy"}
-                    decoding="async"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0d274f]/55 via-[#0d274f]/10 to-transparent" />
+                  <span className="size-[7px] rounded-full bg-white sm:size-[9px]" />
+                </span>
+
+                <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-white/70 sm:text-[11px]">
+                  {item.eyebrow}
+                </p>
+
+                <h3 className="mt-2 text-xl font-semibold tracking-tight sm:text-2xl">
+                  {item.title}
+                </h3>
+
+                <figure className="mt-4 overflow-hidden rounded-[1.25rem] border border-white/15 bg-white/[0.08] shadow-[0_18px_50px_rgba(0,0,0,0.16)] sm:rounded-[1.5rem]">
+                  <div className="relative aspect-[4/3] w-full sm:aspect-[16/10]">
+                    <img
+                      src={item.image}
+                      alt={item.imageAlt}
+                      className="absolute inset-0 h-full w-full object-cover"
+                      loading={index === 0 ? "eager" : "lazy"}
+                      decoding="async"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0d274f]/45 via-[#0d274f]/5 to-transparent" />
+                  </div>
                 </figure>
-              ))}
+
+                <div className="mt-4 rounded-[1.25rem] border border-white/15 bg-white/[0.08] p-4 backdrop-blur-md sm:rounded-[1.5rem] sm:p-5">
+                  <p className="text-sm leading-6 text-white/90 sm:text-[15px] sm:leading-7">
+                    {item.description}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </div>
+
+      {/* ================================================================
+          DESKTOP (lg+) — pinned, scroll-scrubbed timeline
+          ================================================================ */}
+      <div
+        ref={desktopRef}
+        className="relative hidden lg:block lg:motion-reduce:hidden"
+        style={{ minHeight: `calc(100svh * ${timelineItems.length})` }}
+      >
+        <div ref={pinRef} className="relative flex h-[100svh] items-center">
+          <div className="mx-auto w-full max-w-7xl px-8">
+            <h2 className="mb-6 text-5xl font-semibold tracking-tight">
+              Journey
+            </h2>
+
+            <div className="grid grid-cols-[1fr_120px_1fr] gap-7">
+              <div className="relative min-h-[34rem]">
+                {timelineItems.map((item, index) => (
+                  <article
+                    key={item.title}
+                    ref={setTextRef(index)}
+                    className="absolute inset-0 flex items-center"
+                    style={{ willChange: "transform, opacity, filter" }}
+                  >
+                    <div className="w-full rounded-[2rem] border border-white/14 bg-white/[0.08] p-7 shadow-[0_24px_80px_rgba(0,0,0,0.16)] backdrop-blur-xl">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-white/58">
+                        {item.eyebrow}
+                      </p>
+
+                      <h3 className="mt-3 max-w-xl text-3xl font-semibold tracking-tight">
+                        {item.title}
+                      </h3>
+
+                      <p className="mt-4 max-w-xl text-[15px] leading-7 text-white/84">
+                        {item.description}
+                      </p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+
+              <div className="relative flex min-h-[34rem] items-center justify-center">
+                <svg
+                  viewBox="0 0 120 620"
+                  className="h-full w-[120px]"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M60 18 C64 130 56 210 60 310 C64 410 56 490 60 602"
+                    fill="none"
+                    stroke="rgba(13,39,79,0.22)"
+                    strokeWidth="6"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    ref={linePathRef}
+                    d="M60 18 C64 130 56 210 60 310 C64 410 56 490 60 602"
+                    fill="none"
+                    stroke="#0d274f"
+                    strokeWidth="6"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </div>
+
+              <div className="relative min-h-[34rem]">
+                {timelineItems.map((item, index) => (
+                  <figure
+                    key={item.image}
+                    ref={setImageRef(index)}
+                    className="absolute inset-0 overflow-hidden rounded-[2rem] border border-white/14 bg-white/[0.08] shadow-[0_24px_80px_rgba(0,0,0,0.18)]"
+                    style={{ willChange: "transform, opacity" }}
+                  >
+                    <img
+                      src={item.image}
+                      alt={item.imageAlt}
+                      className="h-full w-full object-cover"
+                      loading={index === 0 ? "eager" : "lazy"}
+                      decoding="async"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0d274f]/55 via-[#0d274f]/10 to-transparent" />
+                  </figure>
+                ))}
+              </div>
             </div>
           </div>
         </div>
