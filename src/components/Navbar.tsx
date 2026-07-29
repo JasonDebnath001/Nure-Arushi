@@ -38,7 +38,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="w-full bg-white px-4 pt-4 sm:px-6 sm:pt-5 lg:px-10">
+    <header className="w-full bg-[#1a0c70] px-4 pt-4 sm:px-6 sm:pt-5 lg:px-10">
       <div
         className={`mx-auto max-w-[1400px] bg-[#f4731f] shadow-[0_14px_35px_rgba(244,115,31,0.28)] transition-[border-radius] duration-300 ${
           open ? "rounded-[2rem]" : "rounded-full"
