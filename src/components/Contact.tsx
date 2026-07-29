@@ -84,6 +84,7 @@ const labelClasses =
 
 export default function Contact() {
   const pageRef = useRef<HTMLElement | null>(null);
+  const isSubmittingRef = useRef(false);
   const [status, setStatus] = useState<SubmitStatus>("idle");
 
   useGSAP(
@@ -114,11 +115,12 @@ export default function Contact() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (status === "sending") return;
+    if (isSubmittingRef.current) return;
 
     const form = event.currentTarget;
     const data = new FormData(form);
 
+    isSubmittingRef.current = true;
     setStatus("sending");
 
     try {
@@ -146,6 +148,8 @@ export default function Contact() {
       setStatus("success");
     } catch {
       setStatus("error");
+    } finally {
+      isSubmittingRef.current = false;
     }
   }
 
@@ -283,7 +287,7 @@ export default function Contact() {
                     name="message"
                     required
                     rows={4}
-                    placeholder="Tell me what&rsquo;s on your mind&hellip;"
+                    placeholder="Tell me what's on your mind…"
                     className={`${fieldClasses} resize-none`}
                   />
                 </div>
