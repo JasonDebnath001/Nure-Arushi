@@ -3,6 +3,8 @@ import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import Footer from './components/Footer'
 import Contact from './components/Contact'
+import About from './pages/About'
+import Blog from './pages/Blog'
 
 
 const App = () => {
@@ -12,6 +14,8 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/blog" element={<Blog />} />
       </Routes>
       <Footer />
     </>
